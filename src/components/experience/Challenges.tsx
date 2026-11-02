@@ -262,7 +262,7 @@ type Final = Extract<ChallengeStep, { kind: "final" }>;
 
 function TextStep({ step, onNext, onSound, onAnswer }: { step: Text; onNext: () => void; onSound?: (() => void) | undefined; onAnswer: (value: string, correct: boolean) => void }) {
   const [value, setValue] = useState("");
-  const [state, setState] = useState<"idle" | "wrong" | "right">("idle");
+  const [state, setState] = useState<"idle" | "wrong">("idle");
 
   const check = () => {
     // Forgiving match: lowercase, strip punctuation, collapse spaces, then
@@ -281,9 +281,9 @@ function TextStep({ step, onNext, onSound, onAnswer }: { step: Text; onNext: () 
       return na.length > 0 && (v === na || v.includes(na));
     });
     // Any answer is accepted; `ok` only feeds the heart score.
+    // Just note her answer and move on — no reveal of the expected answer.
     onAnswer(value.trim(), ok);
-    onSound?.();
-    setState("right");
+    onNext();
   };
 
   return (
@@ -292,89 +292,24 @@ function TextStep({ step, onNext, onSound, onAnswer }: { step: Text; onNext: () 
         {step.question}
       </p>
 
-      {state !== "right" ? (
-        <>
-          <input
-            value={value}
-            onChange={(e) => {
-              setValue(e.target.value);
-              if (state === "wrong") setState("idle");
-            }}
-            onKeyDown={(e) => e.key === "Enter" && check()}
-            placeholder="type your answer"
-            className={`mt-7 w-full rounded-full border bg-transparent px-5 py-3.5 text-center text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 ${
-              state === "wrong" ? "animate-sway border-glow-rose/70" : "border-border/60 focus:border-glow-gold/60"
-            }`}
-          />
-          <p className="mt-3 min-h-7 font-hand text-xl text-glow-rose" style={{ opacity: state === "wrong" ? 1 : 0 }}>
-            {step.wrong}
-          </p>
-          <NextButton onClick={check} label="Answer" />
-          {state === "wrong" && <SkipButton onClick={onNext} />}
-        </>
-      ) : (
-        <div style={{ animation: "fade-in 0.8s ease-out both" }}>
-          <p className="mt-5 font-hand text-2xl text-glow-gold">{step.correct}</p>
-          {step.reveal && (
-            <p
-              className="mt-6 font-display text-3xl tracking-[0.25em] text-glow-rose sm:text-5xl"
-              style={{ animation: "scale-in 1.2s ease-out both", filter: "drop-shadow(0 0 26px oklch(0.72 0.192 355 / 55%))" }}
-            >
-              {step.reveal}
-            </p>
-          )}
-          {step.revealLines?.map((l, i) => (
-            <p
-              key={l}
-              className="mt-3 font-display text-lg text-foreground/90"
-              style={{ animation: `fade-in 1s ease-out ${0.5 + i * 0.5}s both` }}
-            >
-              {l}
-            </p>
-          ))}
-          {step.reveal === "PAPU" && <HeartBurst />}
-          {step.photo && (
-            <div
-              className="mt-6 overflow-hidden rounded-3xl border border-border/50"
-              style={{ animation: "scale-in 1s ease-out 0.6s both", boxShadow: "var(--shadow-float)" }}
-            >
-              {step.photo.src ? (
-                <img src={step.photo.src} alt={step.photo.caption} loading="lazy" className="aspect-4/3 w-full object-cover" />
-              ) : (
-                <div className="flex aspect-4/3 w-full items-center justify-center text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  add our photo
-                </div>
-              )}
-              <p className="py-2 font-hand text-xl text-foreground/85">{step.photo.caption}</p>
-            </div>
-          )}
-          {step.memory && <p className="mt-5 font-hand text-2xl text-foreground/85">"{step.memory}"</p>}
-          <NextButton onClick={onNext} />
-        </div>
-      )}
+      <input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          if (state === "wrong") setState("idle");
+        }}
+        onKeyDown={(e) => e.key === "Enter" && check()}
+        placeholder="type your answer"
+        className={`mt-7 w-full rounded-full border bg-transparent px-5 py-3.5 text-center text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 ${
+          state === "wrong" ? "animate-sway border-glow-rose/70" : "border-border/60 focus:border-glow-gold/60"
+        }`}
+      />
+      <p className="mt-3 min-h-7 font-hand text-xl text-glow-rose" style={{ opacity: state === "wrong" ? 1 : 0 }}>
+        {step.wrong}
+      </p>
+      <NextButton onClick={check} label="Answer" />
+      {state === "wrong" && <SkipButton onClick={onNext} />}
     </Shell>
-  );
-}
-
-function HeartBurst() {
-  return (
-    <span aria-hidden className="relative mt-5 flex h-16 items-center justify-center">
-      {Array.from({ length: 7 }).map((_, i) => (
-        <span
-          key={i}
-          className="absolute text-glow-rose/80"
-          style={{
-            transform: `rotate(${i * 51}deg) translateX(64px)`,
-            animation: `fade-in 0.9s ease-out ${0.3 + i * 0.1}s both`,
-          }}
-        >
-          <Butterfly size={15} />
-        </span>
-      ))}
-      <span className="text-glow-rose animate-heartbeat" style={{ filter: "drop-shadow(0 0 20px currentColor)" }}>
-        <HeartGlyph size={30} />
-      </span>
-    </span>
   );
 }
 
