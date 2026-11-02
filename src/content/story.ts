@@ -6,6 +6,7 @@ import sceneFriends from "@/assets/scene-friends.jpg";
 import sceneLove from "@/assets/scene-love.jpg";
 import sceneFuture from "@/assets/scene-future.jpg";
 import sceneChallenges from "@/assets/scene-challenges.jpg";
+import tomJerryLove from "@/assets/tom-jerry-love.jpg";
 import owGift from "@/assets/only-for-you/gift-ring-rose.jpg";
 import owBike from "@/assets/only-for-you/bike-ride.jpg";
 import owCandid from "@/assets/only-for-you/candid.jpg";
@@ -116,7 +117,7 @@ export const memoryCards: MemoryCardData[] = [
       "You are my favourite troublemaker,\nmy sweetest headache,\nand my forever partner in this beautiful chaos called love.",
       "No matter how many times we fight, I hope we always choose each other, because even in our most Tom-and-Jerry moments, you will always be my favourite person. 🤍🐱🐭✨",
     ],
-    photo: { src: sceneFuture, caption: "our beautiful chaos" },
+    photo: { src: tomJerryLove, caption: "our beautiful chaos" },
   },
   {
     id: "only-for-you",
